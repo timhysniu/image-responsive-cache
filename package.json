@@ -1,0 +1,34 @@
+{
+  "name": "image-responsive-cache",
+  "version": "0.0.1",
+  "description": "Library to resize and cache images using presets of dimensions",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timhysniu/image-responsive-cache.git"
+  },
+  "keywords": [
+    "image",
+    "cache",
+    "responsive",
+    "resize"
+  ],
+  "author": "Tim Hysniu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/timhysniu/image-responsive-cache/issues"
+  },
+  "homepage": "https://github.com/timhysniu/image-responsive-cache#readme",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "gm": "^1.23.1",
+    "path": "^0.12.7",
+    "sha1": "^1.1.1"
+  }
+}
