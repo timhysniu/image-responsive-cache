@@ -1,6 +1,6 @@
 {
   "name": "image-responsive-cache",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Library to resize and cache images using presets of dimensions",
   "main": "index.js",
   "directories": {
