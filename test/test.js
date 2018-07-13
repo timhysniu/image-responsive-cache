@@ -19,8 +19,10 @@ var ircObj = irc({
 });
 
 // resize and cache image
-let cached = ircObj.image('PRESET1', __dirname + '/images/sample.jpg');
-console.log("PRESET1 Image: ", cached);
+let cached = ircObj.image('PRESET1', __dirname + '/images/sample.jpg').then((path) => {
+    console.log("PRESET1 Image: ", path);
+});
 
-let cached2 = ircObj.image('PRESET2', __dirname + '/images/sample.jpg');
-console.log("PRESET2 Image: ", cached2);
+let cached2 = ircObj.image('PRESET2', __dirname + '/images/sample.jpg').then((path) => {
+    console.log("PRESET2 Image: ", path);
+});

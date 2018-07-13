@@ -37,49 +37,55 @@ const ImageResponsiveCache = (config = {}) => {
      *
      * @param preset
      * @param origImage path to original image
+     * @returns Promise
      */
     self.image = (preset, origImage) => {
-        let gmObj;
-        if(!self._presets[preset]) {
-            throw new Error('preset does not exist');
-        }
+        return new Promise((resolve, reject) => {
+            let gmObj;
+            if( !self._presets[preset] ) {
+                reject(new Error('preset does not exist'));
+            }
 
-        // check if in cache
-        const path = self._generateFileName(origImage, preset);
-        if (fs.existsSync(path)) {
+            // check if in cache
+            const path = self._generateFileName(origImage, preset);
+            if (fs.existsSync(path)) {
+                if(self._debug) {
+                    self._logger.log('returning from cache', path);
+                }
+
+                return resolve(path);
+            }
+
+            // generate cache directory with 3 levels
+            // cache image will sit under {_cache_path}/x/y/{hash}.jpg
             if(self._debug) {
-                self._logger.log('returning from cache', path);
+                self._logger.log(`image not in cache. resizing...`);
+            }
+            self._generateFileName(origImage, preset, true);
+
+            // resize and cache
+            if(self._presets[preset].width && self._presets[preset].height) {
+                gmObj = gm(origImage).resize(self._presets[preset].width, self._presets[preset].height)
+            }
+            else if(self._presets[preset].width) {
+                gmObj = gm(origImage).resize(self._presets[preset].width);
             }
 
-            return path;
-        }
-
-        // generate cache directory with 3 levels
-        // cache image will sit under {_cache_path}/x/y/{hash}.jpg
-        if(self._debug) {
-            self._logger.log(`image not in cache. resizing...`);
-        }
-        self._generateFileName(origImage, preset, true);
-
-        // resize and cache
-        if(self._presets[preset].width && self._presets[preset].height) {
-            gmObj = gm(origImage).resize(self._presets[preset].width, self._presets[preset].height)
-        }
-        else if(self._presets[preset].width) {
-            gmObj = gm(origImage).resize(self._presets[preset].width);
-        }
-
-        if(!gmObj) {
-            throw new Error('could not resize image', origImage);
-        }
-
-        gmObj.quality(self._quality).write(path, function (err) {
-            if (err) {
-                self._logger.log('could not resize', err);
+            if(!gmObj) {
+                reject(new Error('could not resize image'));
             }
+
+            gmObj.quality(self._quality).write(path, function (err) {
+                if (err) {
+                    self._logger.log('could not resize', err);
+                    reject(err);
+                }
+                else {
+                    resolve(path);
+                }
+            });
+
         });
-
-        return path;
     };
 
     self._generateFileName = (origImage, preset, createDir = false) => {
