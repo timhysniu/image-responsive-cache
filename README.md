@@ -1,12 +1,8 @@
 # image-responsive-cache
 
 This is a library to resize and cache images using an arbitrary presets of dimensions.
-
-If you are running Google Speed Insights test on your web pages and you notice that score is
-low because of images then you can probably do some optimization. Depending on your designs
-your desktop might call for a different resolution of images from mobile or tablet view.
-The closer the rendered image is to the actual dimensions of the image the better the score is going to be.
-You might want to serve different dimensions to different screen sizes so you might need a few presets.
+It will resize and cache an image using one of the presets the first time. After first time it will return the
+path of the already cached version of the resized image.
 
 This library is responsible for resizing and caching images at a defined cache path. You will need to setup
 your own routes that resolve to cached paths, however. For example in `express` or `hapi` you will want to initalize
@@ -51,11 +47,14 @@ var ircObj = irc({
 });
 
 // resize and cache image
-let cached = ircObj.image('PRESET1', __dirname + '/images/sample.jpg');
-console.log("PRESET1 Image: ", cached);
+// resize and cache image
+ircObj.image('PRESET1', __dirname + '/images/sample.jpg').then((path) => {
+    console.log("PRESET1 Image: ", path);
+});
 
-let cached2 = ircObj.image('PRESET2', __dirname + '/images/sample.jpg');
-console.log("PRESET2 Image: ", cached2);
+ircObj.image('PRESET2', __dirname + '/images/sample.jpg').then((path) => {
+    console.log("PRESET2 Image: ", path);
+});
 ```
 
 Output:
@@ -72,5 +71,33 @@ Directory /tmp/PRESET2/b/1 created!
 PRESET2 Image:  /tmp/PRESET2/b/1/b1f1d7e25a8deb66010a0c932fff4d02b6b505e5.jpg
 ```
 
-Use `cached` and `cached2` paths in your webserver routes.
+## Serving Cached Images
 
+You may want to use a CDN or serve media directly from your server. Whether this is part of your application or
+standalone service, you will need to pull it from disk and serve publicly or to another service.
+
+In `hapi` this can be done by setting up a wildcard route as follows:
+
+```
+/* GET ad details. */
+router.get('/photo/preset1/*', function (req, res) {
+    let originalPath = '/' + req.params['0'];
+    irc.image('PRESET1', originalPath).then((cachedPath) => {
+        res.set('Content-Type', 'image/jpg');
+        res.sendFile(path);
+    });
+});
+```
+
+... and voila you can now access it via `http://yourdomain/photo1/{originalPath}`
+
+## Resizing for Google Speed Insights
+
+On July 2018 Google started penalizing sites with poor performance. Image optimization comes up a lot in
+Google Speed Insights.
+
+If you are running Google Speed Insights test on your web pages and you notice that score is
+low because of images then you can probably do some optimization. Depending on your designs
+your desktop might call for a different resolution of images from mobile or tablet view.
+The closer the rendered image is to the actual dimensions of the image the better the score is going to be.
+You might want to serve different dimensions to different screen sizes so you might need a few presets.
