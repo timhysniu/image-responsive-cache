@@ -64,13 +64,7 @@ const ImageResponsiveCache = (config = {}) => {
             self._generateFileName(origImage, preset, true);
 
             // resize and cache
-            if(self._presets[preset].width && self._presets[preset].height) {
-                gmObj = gm(origImage).resize(self._presets[preset].width, self._presets[preset].height)
-            }
-            else if(self._presets[preset].width) {
-                gmObj = gm(origImage).resize(self._presets[preset].width);
-            }
-
+            gmObj = gm(origImage).resize(self._presets[preset].width, self._presets[preset].height);
             if(!gmObj) {
                 reject(new Error('could not resize image'));
             }

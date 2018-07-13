@@ -11,8 +11,8 @@ var ircObj = irc({
             height: null,   // height is auto. current aspect ratio is preserved
         },
         PRESET2: {
-            width: 100,
-            height: null
+            width: null,
+            height: 200
         }
 
     }
